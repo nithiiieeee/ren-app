@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Ren Radio</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="artworks.js"></script>
+    <script src="playlists.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0b0b0d;
+            --bg-secondary: #141417;
+            --bg-tertiary: #1a1a1e;
+            --bg-card: #111114;
+            --bg-modal: #16161a;
+            --text-primary: #f0ede8;
+            --text-secondary: #989590;
+            --text-muted: #6b6762;
+            --accent: #c4a67a;
+            --accent-soft: rgba(196, 166, 122, 0.12);
+            --accent-glow: rgba(196, 166, 122, 0.25);
+            --accent-alt: #c97d6a;
+            --accent-alt-soft: rgba(201, 125, 106, 0.12);
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-card: rgba(255, 255, 255, 0.07);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.55);
+            --glass-bg: rgba(18, 18, 22, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --spring-ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --radius-xs: 6px;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 18px;
+            --radius-xl: 22px;
+            --radius-2xl: 26px;
+            --transition-fast: 0.15s var(--smooth-ease);
+            --transition-smooth: 0.35s var(--spring-ease);
+            --transition-bounce: 0.45s var(--bounce-ease);
+        }
+
+        body.light-mode {
+            --bg-primary: #f5f2ed;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #faf8f5;
+            --bg-card: #ffffff;
+            --bg-modal: #fdfdfc;
+            --text-primary: #1a1815;
+            --text-secondary: #6b6762;
+            --text-muted: #9a9690;
+            --accent: #b08d5c;
+            --accent-soft: rgba(176, 141, 92, 0.1);
+            --accent-glow: rgba(176, 141, 92, 0.18);
+            --accent-alt: #c07a64;
+            --accent-alt-soft: rgba(192, 122, 100, 0.1);
+            --border-subtle: rgba(0, 0, 0, 0.05);
+            --border-card: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 36px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.88);
+            --glass-border: rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html,
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #060608;
+            color: var(--text-primary);
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+            transition: background-color 0.6s var(--smooth-ease);
+        }
+
+        body {
+            background: radial-gradient(ellipse at 50% 35%, #1a1a20 0%, #0c0c10 55%, #060608 100%);
+        }
+
+        body.light-mode {
+            background: radial-gradient(ellipse at 50% 35%, #e8e5df 0%, #dcd8d0 50%, #d0ccc4 100%);
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.18;
+        }
+
+        body.light-mode .bg-particles {
+            opacity: 0.1;
+        }
+
+        .bg-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            animation: floatUp linear infinite;
+        }
+
+        body.light-mode .bg-particle {
+            background: rgba(140, 130, 115, 0.25);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0);
+                opacity: 0;
+            }
+
+            8% {
+                opacity: 0.7;
+            }
+
+            85% {
+                opacity: 0.35;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            max-height: 900px;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding: calc(14px + var(--safe-top)) 18px calc(12px + var(--safe-bottom)) 18px;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: background-color 0.6s var(--smooth-ease), border-radius 0.4s;
+            scroll-behavior: smooth;
+        }
+
+        @media (min-width: 431px) {
+            .app-wrapper {
+                border-radius: 30px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+                margin: 10px;
+                height: calc(100dvh - 20px);
+                max-height: 880px;
+            }
+
+            body.light-mode .app-wrapper {
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 2px 2px;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            letter-spacing: 2.5px;
+            font-weight: normal;
+            color: var(--text-primary);
+        }
+
+        .header-icon {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-card);
+            transition: all 0.25s var(--smooth-ease);
+        }
+
+        .header-icon:active {
+            transform: scale(0.9);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .visualizer-container {
+            width: 100%;
+            aspect-ratio: 10 / 11;
+            background-color: #0e0e11;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 1px solid var(--border-card);
+            transition: all 0.5s var(--spring-ease);
+        }
+
+        .visualizer-container:active {
+            transform: scale(0.985);
+            transition: transform 0.12s var(--smooth-ease);
+        }
+
+        .visualizer-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.7s ease, transform 0.7s var(--spring-ease);
+        }
+
+        .visualizer-container img.paused-art {
+            filter: brightness(0.3) saturate(0.4);
+            transform: scale(1.04);
+        }
+
+        .visualizer-glow {
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius-xl);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 1s ease;
+            box-shadow: inset 0 0 50px var(--accent-glow), 0 0 35px var(--accent-glow);
+        }
+
+        .visualizer-glow.active {
+            opacity: 1;
+        }
+
+        .status-bar-container {
+            display: flex;
+            gap: 8px;
+            height: 46px;
+            flex-shrink: 0;
+        }
+
+        .status-display {
+            flex-grow: 1;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 0.66rem;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-card);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .status-display::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 28px;
+            background: linear-gradient(to right, transparent, var(--bg-card));
+            pointer-events: none;
+        }
+
+        .status-text-inner {
+            display: inline-block;
+            animation: statusScroll 8s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .status-text-inner.scrolling {
+            animation-play-state: running;
+        }
+
+        @keyframes statusScroll {
+
+            0%,
+            15% {
+                transform: translateX(0);
+            }
+
+            40%,
+            55% {
+                transform: translateX(calc(-100% + 230px));
+            }
+
+            70%,
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes statusBounce {
+            0% {
+                transform: scale(1);
+            }
+
+            30% {
+                transform: scale(1.025);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .status-display.bouncing {
+            animation: statusBounce 0.5s var(--bounce-ease);
+        }
+
+        .settings-btn {
+            width: 46px;
+            min-width: 46px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.25s var(--smooth-ease);
+        }
+
+        .settings-btn:active {
+            transform: scale(0.9);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .feature-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            height: 68px;
+            flex-shrink: 0;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.25s var(--smooth-ease);
+            border: 1px solid var(--border-card);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid transparent;
+        }
+
+        .feature-card:active {
+            transform: scale(0.94);
+            background-color: var(--bg-tertiary);
+        }
+
+        .feature-card i {
+            font-size: 0.95rem;
+            transition: transform 0.35s var(--spring-ease);
+            color: var(--text-secondary);
+        }
+
+        .feature-card:active i {
+            transform: scale(1.15);
+        }
+
+        .feature-card span {
+            font-size: 0.62rem;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            transition: color 0.35s;
+        }
+
+        .feature-card.timer-active {
+            border-bottom-color: var(--accent-alt);
+        }
+
+        .feature-card.timer-active span {
+            color: var(--accent-alt);
+            font-weight: bold;
+        }
+
+        .feature-card.active-sound {
+            border-bottom-color: var(--accent);
+        }
+
+        .feature-card.active-sound i,
+        .feature-card.active-sound span {
+            color: var(--accent);
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 8px;
+            height: 106px;
+            flex-shrink: 0;
+        }
+
+        .action-box {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            transition: all 0.25s var(--smooth-ease);
+        }
+
+        .action-box:active {
+            transform: scale(0.94);
+        }
+
+        .action-box i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            margin-top: 4px;
+            color: var(--text-secondary);
+            transition: all 0.35s var(--spring-ease);
+        }
+
+        .action-box:active i {
+            transform: scale(1.2);
+        }
+
+        .action-box span {
+            font-size: 0.66rem;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+        }
+
+        .action-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent-alt);
+            transition: all 0.5s var(--spring-ease);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            opacity: 0.7;
+        }
+
+        .action-indicator.green {
+            background-color: var(--accent);
+            opacity: 1;
+            box-shadow: 0 0 16px var(--accent-glow);
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes subtlePulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px var(--accent-glow);
+            }
+
+            50% {
+                box-shadow: 0 0 22px var(--accent-glow);
+            }
+        }
+
+        .stations-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .station-card {
+            flex: 1;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 16px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--border-card);
+            transition: all 0.25s var(--smooth-ease);
+            overflow: hidden;
+        }
+
+        .station-card:active {
+            transform: scale(0.96);
+        }
+
+        .station-card .station-title {
+            font-size: 0.62rem;
+            letter-spacing: 1.2px;
+            font-weight: bold;
+            color: var(--text-muted);
+            transition: color 0.35s;
+        }
+
+        .station-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-soft), 0 4px 18px var(--accent-soft);
+        }
+
+        .station-card.active .station-title {
+            color: var(--accent);
+        }
+
+        .hq-badge {
+            position: absolute;
+            top: 7px;
+            right: 10px;
+            font-size: 0.5rem;
+            background: var(--accent-soft);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: var(--accent);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .extra-sounds-container {
+            display: none;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            height: 48px;
+            width: 100%;
+            flex-shrink: 0;
+            animation: fadeSlideIn 0.4s var(--spring-ease);
+        }
+
+        .extra-sounds-container.active {
+            display: grid;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .extra-sound-tile {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid var(--border-card);
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s var(--smooth-ease);
+        }
+
+        .extra-sound-tile:active {
+            transform: scale(0.88);
+        }
+
+        .extra-sound-tile i {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: all 0.35s var(--spring-ease);
+        }
+
+        .extra-sound-tile.active-sound {
+            border-bottom-color: var(--accent);
+        }
+
+        .extra-sound-tile.active-sound i {
+            color: var(--accent);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s var(--smooth-ease);
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--glass-bg);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            padding: 18px 18px calc(18px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+            transform: translateY(100%);
+            transition: transform 0.45s var(--spring-ease);
+            max-height: 82dvh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-drag-handle {
+            width: 32px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 2px;
+            margin: 0 auto 6px;
+        }
+
+        .modal-title {
+            font-size: 0.85rem;
+            letter-spacing: 1.8px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 1px;
+        }
+
+        .timer-option,
+        .settings-sub-btn {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-xs);
+            height: 46px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.68rem;
+            letter-spacing: 1.3px;
+            color: var(--text-primary);
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.25s var(--smooth-ease);
+        }
+
+        .timer-option:active,
+        .settings-sub-btn:active {
+            transform: scale(0.97);
+            background-color: var(--bg-secondary);
+        }
+
+        /* Polished settings labels */
+        .settings-label,
+        .toggle-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Smoother toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3a3a3e;
+            transition: 0.3s var(--spring-ease);
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            transition: 0.3s var(--spring-ease);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        input:active+.slider:before {
+            width: 26px;
+        }
+
+        .custom-time-box {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xs);
+            padding: 7px 10px;
+            flex: 1;
+        }
+
+        .custom-time-box input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+
+        .sound-option-card {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            height: 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s;
+        }
+
+        .sound-option-card.active {
+            border-bottom-color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft);
+        }
+
+        .sound-option-card.active i,
+        .sound-option-card.active .sound-name {
+            color: var(--accent);
+        }
+
+        .settings-section-label {
+            font-size: 0.65rem;
+            letter-spacing: 1.4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 6px;
+            margin-bottom: -2px;
+            padding-left: 2px;
+        }
+
+        .settings-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-xs);
+            height: 48px;
+            padding: 0 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .settings-slider-card {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-xs);
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 4px;
+        }
+
+        .settings-range {
+            width: 100%;
+            accent-color: var(--accent);
+            margin-top: 6px;
+        }
+
+        .info-text {
+            font-size: 0.64rem;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .info-text a {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .info-credits {
+            font-size: 0.58rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin: 8px 0 10px;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 10px;
+        }
+
+        .data-policy-box {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-xs);
+            padding: 10px 12px;
+            font-size: 0.58rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        .accent-color-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .accent-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+            background-color: var(--swatch-color);
+        }
+
+        .accent-swatch.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .accent-custom-btn {
+            font-size: 0.62rem;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .zen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            background-color: #08080a;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: calc(22px + var(--safe-top)) 22px calc(22px + var(--safe-bottom));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s;
+        }
+
+        .zen-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .zen-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .zen-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.45);
+        }
+
+        .zen-center-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zen-clock {
+            font-family: 'VT323', monospace;
+            font-size: 5.5rem;
+            color: #f0ede8;
+            letter-spacing: 4px;
+        }
+
+        .zen-pomodoro-timer {
+            font-size: 0.82rem;
+            letter-spacing: 1.6px;
+            color: #d8d4ce;
+            cursor: pointer;
+            padding: 7px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .zen-bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 6px 0;
+        }
+
+        .zen-nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0dcd6;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-particles" id="bg-particles"></div>
+
+    <div class="app-wrapper">
+        <div class="header">
+            <h1 id="greeting-text">Good Afternoon</h1>
+            <i class="fa-solid fa-wand-magic-sparkles header-icon" id="sparkle-menu-btn"></i>
+        </div>
+
+        <div class="visualizer-container" id="visualizer-container">
+            <img src="https://media.tenor.com/images/5f048d8c9735a225e84860b213824f11/tenor.gif" alt="Visualizer"
+                id="visualizer-img">
+            <div class="visualizer-glow" id="visualizer-glow"></div>
+        </div>
+
+        <div class="status-bar-container">
+            <div class="status-display" id="status-text"><span class="status-text-inner" id="status-text-inner">PRESS
+                    PLAY TO BEGIN LISTENING</span></div>
+            <button class="settings-btn" id="settings-gear-btn"><i class="fa-solid fa-gear"></i></button>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-card" id="timer-feature-card"><i class="fa-regular fa-moon" id="timer-icon"></i><span
+                    id="timer-label">TIMER · 計時</span></div>
+            <div class="feature-card" id="rain-feature-card"><i class="fa-solid fa-droplet" id="rain-icon"></i><span
+                    id="rain-label">RAIN · 雨</span></div>
+            <div class="feature-card" id="vinyl-feature-card"><i class="fa-solid fa-compact-disc"
+                    id="vinyl-icon"></i><span id="vinyl-label">VINYL · 録音</span></div>
+        </div>
+
+        <div class="bottom-grid">
+            <div class="action-box" id="play-action-btn"><i class="fa-solid fa-play" id="play-icon"></i><span
+                    id="play-label">PLAY · 再生</span>
+                <div class="action-indicator" id="action-indicator"></div>
+            </div>
+            <div class="stations-column">
+                <div class="station-card active" id="main-station-card"><span class="hq-badge">HQ</span><span
+                        class="station-title">&nbsp;&nbsp;MAIN STATION · 主要駅</span></div>
+                <div class="station-card" id="scan-station-card"><span class="station-title">&nbsp;&nbsp;SCAN STATIONS ·
+                        他検索</span></div>
+            </div>
+        </div>
+        <div class="extra-sounds-container" id="extra-sounds-bar"></div>
+    </div>
+
+    <!-- Modals (identical to previous, no artwork modal) -->
+    <div class="modal-overlay" id="timer-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">SET SLEEP TIMER</div>
+            <div class="timer-option" data-minutes="10">10 MINUTES · 10 分 <i class="fa-solid fa-tag tag-icon"></i></div>
+            <div class="timer-option" data-minutes="25">25 MINUTES · 25 分</div>
+            <div class="timer-option" data-minutes="45">45 MINUTES · 45 分</div>
+            <div class="timer-option" data-minutes="60">01 HOUR · 01 時</div>
+            <div class="timer-option" data-minutes="custom">CUSTOM TIMER</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="custom-timer-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">CUSTOM SLEEP TIMER</div>
+            <div class="custom-time-inputs-row" style="display:flex; gap:7px;">
+                <div class="custom-time-box"><span class="custom-time-title"
+                        style="font-size:0.5rem;">MINUTES</span><input type="number" id="custom-mins-input"
+                        placeholder="00" min="0" max="360"></div>
+                <span style="font-size:1.2rem;">:</span>
+                <div class="custom-time-box"><span class="custom-time-title"
+                        style="font-size:0.5rem;">SECONDS</span><input type="number" id="custom-secs-input"
+                        placeholder="00" min="0" max="59"></div>
+            </div>
+            <div style="display:flex; gap:7px;">
+                <div class="timer-option" id="cancel-custom-btn" style="flex:1;">CANCEL</div>
+                <div class="timer-option" id="start-custom-btn"
+                    style="flex:1; background:var(--accent); color:#0b0b0d; font-weight:bold;">START</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="sound-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">CHANGE SOUND EFFECT</div>
+            <div class="settings-toggle-row" style="margin-bottom:5px;">
+                <span class="settings-label">ENABLE ALL EFFECTS</span>
+                <label class="switch"><input type="checkbox" id="enable-all-effects-toggle"><span
+                        class="slider"></span></label>
+            </div>
+            <div class="sound-grid">
+                <div class="sound-option-card active" data-sound="rain" data-name="RAIN · 雨"
+                    data-icon="fa-solid fa-droplet"><i class="fa-solid fa-droplet"></i><span class="sound-name">RAIN ·
+                        雨</span></div>
+                <div class="sound-option-card" data-sound="vinyl" data-name="VINYL · 録音"
+                    data-icon="fa-solid fa-compact-disc"><i class="fa-solid fa-compact-disc"></i><span
+                        class="sound-name">VINYL · 録音</span></div>
+                <div class="sound-option-card" data-sound="fire" data-name="FIRE · 計時" data-icon="fa-solid fa-fire"><i
+                        class="fa-solid fa-fire"></i><span class="sound-name">FIRE · 計時</span></div>
+                <div class="sound-option-card" data-sound="ocean" data-name="OCEAN · 海" data-icon="fa-solid fa-water"><i
+                        class="fa-solid fa-water"></i><span class="sound-name">OCEAN · 海</span></div>
+                <div class="sound-option-card" data-sound="woods" data-name="WOODS · 森林" data-icon="fa-solid fa-leaf"><i
+                        class="fa-solid fa-leaf"></i><span class="sound-name">WOODS · 森林</span></div>
+                <div class="sound-option-card" data-sound="river" data-name="RIVER · 流" data-icon="fa-solid fa-fish"><i
+                        class="fa-solid fa-fish"></i><span class="sound-name">RIVER · 流</span></div>
+                <div class="sound-option-card" data-sound="storm" data-name="STORM · 嵐"
+                    data-icon="fa-solid fa-cloud-bolt"><i class="fa-solid fa-cloud-bolt"></i><span
+                        class="sound-name">STORM · 嵐</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="station-list-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">SELECT STATION</div>
+            <div class="station-section-label" style="font-size:0.66rem; color:var(--text-muted);">LOFI STATIONS</div>
+            <div class="station-scroll-container" id="station-list-container"
+                style="display:flex; flex-direction:column; gap:5px; overflow-y:auto; max-height:55vh;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="sparkle-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">EXPLORE REN</div>
+            <div class="timer-option" id="tips-btn"><span>TIPS AND HIDDEN GESTURES</span><i
+                    class="fa-solid fa-chevron-right"></i></div>
+            <div class="timer-option" id="plus-btn"
+                style="background:var(--accent); color:#0b0b0d; font-weight:bold; justify-content:center;"><span>YOU
+                    ONLY LIVE ONCE ♡</span></div>
+            <div class="explore-banner"
+                style="text-align:center; font-size:0.66rem; color:var(--text-muted); padding:9px 0; border-top:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
+                <span>DON'T FORGET TO SMILE :)</span></div>
+            <div class="settings-toggle-row"><span class="toggle-label">POMODORO TIMER</span><label
+                    class="switch"><input type="checkbox" id="pomodoro-toggle"><span class="slider"></span></label>
+            </div>
+            <div class="timer-option" id="zen-mode-btn" style="justify-content:center; font-weight:bold;">ENTER ZEN MODE
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="user-guide-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title" style="text-align:left;">USER GUIDE</div>
+            <div
+                style="font-size:0.64rem; line-height:1.45; color:var(--text-secondary); max-height:48vh; overflow-y:auto; padding-right:3px; display:flex; flex-direction:column; gap:9px;">
+                <p>MOST OF REN JUST MAKES SENSE THE MOMENT YOU OPEN IT. IT'S DESIGNED TO BE MINIMAL, INTUITIVE, AND EASY
+                    TO USE. NO CLUTTER, NO CONFUSION.</p>
+                <p>EVEN AS REN GROWS AND GETS NEW FEATURES, I WOULD LIKE TO MAINTAIN THIS SAME CLEAN, MINIMAL FEEL.
+                    THAT'S WHY I'VE TUCKED SOME OF THE CONTROLS BEHIND GESTURES - SO EVERYTHING STAYS OUT OF YOUR WAY
+                    UNTIL YOU NEED IT.</p>
+                <p style="color:var(--text-primary); font-weight:bold; letter-spacing:1px;">* HERE ARE THE GESTURES
+                    WORTH KNOWING *</p>
+                <p><strong>LONG PRESS ANY SOUND EFFECT BUTTON</strong> <br>TO CHANGE ITS SOUND. ONCE YOU'VE SET YOUR
+                    FAVORITES, JUST TAP AS USUAL TO PLAY THEM.</p>
+                <p><strong>POMODORO TIMER (INSIDE ZEN MODE)</strong> <br>TAP THE TIMER ONCE TO PAUSE. LONG PRESS TO
+                    RESET IT.</p>
+            </div>
+            <div class="timer-option" id="guide-back-btn">BACK · 戻る</div>
+        </div>
+    </div>
+
+    <div class="zen-overlay" id="zen-mode-overlay">
+        <div class="zen-bg"><img src="https://media.tenor.com/images/5f048d8c9735a225e84860b213824f11/tenor.gif"
+                id="zen-bg-img"></div>
+        <div class="zen-center-content">
+            <div class="zen-clock" id="zen-clock-display">13:58</div>
+            <div class="zen-pomodoro-timer" id="zen-pomodoro-display" style="display:none;">WORK 作業 - 25:00</div>
+        </div>
+        <div class="zen-bottom-bar">
+            <button class="zen-nav-btn" id="zen-exit-btn"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="zen-nav-btn" id="zen-play-btn"><i class="fa-solid fa-play" id="zen-play-icon"></i></button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="settings-tabs-header"
+                style="display:flex; justify-content:space-around; border-bottom:1px solid var(--border-subtle); padding-bottom:7px;">
+                <div class="settings-tab active" id="settings-tab-btn">Settings</div>
+                <div class="settings-tab" id="info-tab-btn">Information</div>
+            </div>
+            <div class="settings-body" id="settings-tab-content" style="display:flex; flex-direction:column; gap:8px;">
+                <span class="settings-section-label">Appearance</span>
+                <div class="settings-toggle-row"><span class="settings-label">DARK MODE</span><label
+                        class="switch"><input type="checkbox" id="dark-mode-toggle" checked><span
+                            class="slider"></span></label></div>
+                <div class="settings-toggle-row"><span class="settings-label">DISABLE ARTWORK</span><label
+                        class="switch"><input type="checkbox" id="disable-artworks-toggle"><span
+                            class="slider"></span></label></div>
+                <div class="settings-toggle-row"><span class="settings-label">AUTO CHANGE ARTWORK</span><label
+                        class="switch"><input type="checkbox" id="auto-artwork-toggle" checked><span
+                            class="slider"></span></label></div>
+                <div class="settings-toggle-row"><span class="settings-label">DATA SAVING MODE</span><label
+                        class="switch"><input type="checkbox" id="data-saving-toggle"><span
+                            class="slider"></span></label></div>
+                <span class="settings-section-label">Accent Color</span>
+                <div class="settings-toggle-row" style="height:auto; padding:10px 14px; flex-wrap:wrap;">
+                    <div class="accent-color-row" id="accent-swatches">
+                        <div class="accent-swatch active" data-color="#c4a67a" style="--swatch-color:#c4a67a;"></div>
+                        <div class="accent-swatch" data-color="#7aa2c4" style="--swatch-color:#7aa2c4;"></div>
+                        <div class="accent-swatch" data-color="#a17ac4" style="--swatch-color:#a17ac4;"></div>
+                        <div class="accent-swatch" data-color="#7ac4a2" style="--swatch-color:#7ac4a2;"></div>
+                        <div class="accent-swatch" data-color="#c47a7a" style="--swatch-color:#c47a7a;"></div>
+                        <input type="color" id="custom-accent-input" style="display:none;">
+                        <span class="accent-custom-btn" id="custom-accent-btn">Custom</span>
+                    </div>
+                </div>
+                <span class="settings-section-label">Audio</span>
+                <div class="settings-slider-card"><span class="settings-label">SOUND EFFECTS VOLUME</span><input
+                        type="range" min="0" max="100" value="50" class="settings-range" id="sfx-volume-slider"></div>
+                <div class="settings-slider-card" style="margin-bottom:10px;"><span class="settings-label">MUSIC
+                        VOLUME</span><input type="range" min="0" max="100" value="100" class="settings-range"
+                        id="music-volume-slider"></div>
+                <span class="settings-section-label">More</span>
+                <div class="settings-sub-btn" id="more-info-sub-btn">MORE INFORMATION</div>
+            </div>
+            <div class="settings-body" id="info-tab-content" style="display:none;">
+                <div class="info-brand-title" style="font-size:0.9rem; font-weight:bold;">REN RADIO</div>
+                <p class="info-text">REN IS A MINIMALISTIC LO-FI RADIO APP INSPIRED BY THE ORIGINAL APPLICATION <a
+                        href="https://play.google.com/store/apps/details?id=lk.nextbots.lilo&hl=en_IN&pli=1"
+                        target="_blank">LILO</a> MADE BY THE SOFTWARE DEVELOPMENT STUDIO FOCUSED ON BUILDING TIMELESS
+                    DIGITAL EXPERIENCES, <a href="https://systhetics.com" target="_blank">SYSTHETICS</a>.</p>
+                <p class="info-text">REN WAS MADE SINCE THE ORIGINAL APPLICATION HAVE SOME PAID FEATURES WHICH I WANTED
+                    TO USE, BUT I COULDN'T AFFORD TO PAY (It's cheap though !).</p>
+                <p class="info-text">IF YOU SHARE THE SAME STATE OR SIMPLY DON'T LIKE PAYING FOR A SERVICE WHICH IS AS
+                    SIMPLE AS THIS, FEEL FREE TO USE REN SINCE IT IS FREE AND IT'S GONNA STAY FREE AS LONG AS IT EXISTS.
+                    IF YOU DO WANNA SUPPORT, FEEL FREE TO REACH OUT ON IG <a href="https://instagram.com/nithiiieeee"
+                        target="_blank">@nithiiieeee</a>.</p>
+                <div class="info-credits">REN 音楽 * NITHIEEEE * SYSTHETICS<br>STATIONS SOURCE · MANUAL
+                    LINKS<br>ANIMATIONS POWERED BY · GIPHY, TENOR, TUMBLR</div>
+                <div class="data-policy-box"><strong>DATA POLICY</strong><br>Ren Radio stores all preferences locally on
+                    your device. No personal data, listening habits, or analytics are ever collected or sent to any
+                    server. The app works entirely offline once loaded, and no account is required.</div>
+                <div class="settings-sub-btn" id="legal-notices-btn">REN'S CREATOR</div>
+                <div class="settings-sub-btn" id="info-user-guide-btn" style="margin-top:6px;">USER GUIDE</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="legal-notices-modal">
+        <div class="modal-content" style="text-align:center;">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">REN'S CREATOR</div>
+            <a href="https://nithiiieeee.github.io/n" target="_blank" class="timer-option"
+                style="text-decoration:none;">PORTFOLIO</a>
+            <a href="https://instagram.com/nithiiieeee" target="_blank" class="timer-option"
+                style="text-decoration:none;">INSTAGRAM</a>
+            <a href="mailto:dreadful-had-rake@duck.com" target="_blank" class="timer-option"
+                style="text-decoration:none;">MAIL</a>
+            <p style="font-size:0.58rem; color:var(--text-muted); margin:8px 0;">STAY SAFE AND DON'T FORGET TO SMILE :)
+            </p>
+            <div class="timer-option" id="legal-back-btn">CLOSE</div>
+        </div>
+    </div>
+
+    <audio id="audio-stream" src="https://azurecloud.pvtwebs.com/listen/lilo/radio.mp3" preload="none"></audio>
+
+    <script>
+        (function () {
+            // Particles
+            const pc = document.getElementById('bg-particles');
+            for (let i = 0; i < 24; i++) {
+                const p = document.createElement('div');
+                p.className = 'bg-particle';
+                const s = Math.random() * 2.5 + 1.2;
+                p.style.width = s + 'px';
+                p.style.height = s + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = Math.random() * 20 + 12 + 's';
+                p.style.animationDelay = Math.random() * 16 + 's';
+                p.style.opacity = Math.random() * 0.4 + 0.08;
+                pc.appendChild(p);
+            }
+
+            const audio = document.getElementById('audio-stream');
+            const playBtn = document.getElementById('play-action-btn');
+            const playIcon = document.getElementById('play-icon');
+            const playLabel = document.getElementById('play-label');
+            const statusText = document.getElementById('status-text');
+            const statusInner = document.getElementById('status-text-inner');
+            const actionInd = document.getElementById('action-indicator');
+            const glow = document.getElementById('visualizer-glow');
+            const vImg = document.getElementById('visualizer-img');
+            const zImg = document.getElementById('zen-bg-img');
+            const vCont = document.getElementById('visualizer-container');
+
+            let isPlaying = false;
+            let currentGif = "https://media1.tenor.com/m/nySkQmq76FEAAAAd/pixel-art.gif";
+            let artIndex = 0;
+            const FADE_SEC = 8;
+
+            // 1. Helper to get filtered artwork list based on data saving toggle
+            function getUsableArtworks() {
+                const fullList = window.lofiArtworks || (typeof artworks !== 'undefined' ? artworks : [currentGif]);
+                const dataSaving = document.getElementById('data-saving-toggle').checked;
+                if (dataSaving) {
+                    // Only offline artworks (starting with "offlineartworks/")
+                    return fullList.filter(url => url.startsWith('offlineartworks/'));
+                }
+                return fullList;
+            }
+
+            // 2. Updated shuffleArtwork that respects data saving mode
+            function shuffleArtwork() {
+                const list = getUsableArtworks();
+                if (list.length === 0) return; // safety
+                artIndex = (artIndex + 1) % list.length;
+                currentGif = list[artIndex];
+                vImg.src = currentGif;
+                zImg.src = currentGif;
+                updateMediaControlsState();
+            }
+
+            // 3. If data saving is on and current artwork is online, switch to an offline one immediately
+            function enforceDataSavingArtwork() {
+                const dataSaving = document.getElementById('data-saving-toggle').checked;
+                if (dataSaving && !currentGif.startsWith('offlineartworks/')) {
+                    const offlineList = getUsableArtworks();
+                    if (offlineList.length > 0) {
+                        currentGif = offlineList[0];
+                        vImg.src = currentGif;
+                        zImg.src = currentGif;
+                        updateMediaControlsState();
+                    }
+                }
+            }
+
+            function setStatus(msg) {
+                statusInner.textContent = msg;
+                statusInner.classList.remove('scrolling');
+                if (msg.length > 28) {
+                    void statusInner.offsetWidth;
+                    statusInner.classList.add('scrolling');
+                }
+            }
+            function bounceStatus() {
+                statusText.classList.remove('bouncing');
+                void statusText.offsetWidth;
+                statusText.classList.add('bouncing');
+            }
+
+            const deckOpen = new Audio('https://lilofiradio.com/_nuxt/deck_open.Vo5hh4RN.mp3');
+            const deckClose = new Audio('https://lilofiradio.com/_nuxt/deck_close.zqn5rJ7u.mp3');
+
+            function updateMediaControlsState() {
+                const curStation = (stations && stations[stationIndex]) ? stations[stationIndex].name : "REN RADIO";
+                const artUrl = currentGif || "assets/icon.png";
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: curStation,
+                        artist: 'Ren Radio',
+                        album: 'Lo-Fi Stream',
+                        artwork: [{ src: artUrl, sizes: '512x512', type: 'image/gif' }]
+                    });
+                    navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+                    navigator.mediaSession.setActionHandler('play', () => window.renPlay());
+                    navigator.mediaSession.setActionHandler('pause', () => window.renPause());
+                    navigator.mediaSession.setActionHandler('previoustrack', () => window.renPrevStation());
+                    navigator.mediaSession.setActionHandler('nexttrack', () => window.renNextStation());
+                }
+                if (window.AndroidMedia && window.AndroidMedia.updateMediaState) {
+                    try {
+                        window.AndroidMedia.updateMediaState(curStation, isPlaying, artUrl);
+                    } catch (e) { }
+                }
+            }
+
+            window.renPlay = function () { if (!isPlaying) playBtn.click(); };
+            window.renPause = function () { if (isPlaying) playBtn.click(); };
+            window.renNextStation = function () {
+                if (!stations || stations.length === 0) return;
+                selectStation((stationIndex + 1) % stations.length);
+            };
+            window.renPrevStation = function () {
+                if (!stations || stations.length === 0) return;
+                selectStation((stationIndex - 1 + stations.length) % stations.length);
+            };
+
+            playBtn.addEventListener('click', async () => {
+                if (!isPlaying) {
+                    setStatus("PLEASE WAIT - BUFFERING");
+                    bounceStatus();
+                    try {
+                        await audio.play();
+                        isPlaying = true;
+                        setStatus("STREAMING LIVE...");
+                        bounceStatus();
+                        playIcon.className = "fa-solid fa-stop";
+                        playLabel.textContent = "STOP · 停止";
+                        actionInd.className = "action-indicator green";
+                        glow.classList.add('active');
+                        deckClose.currentTime = 0;
+                        deckClose.play().catch(() => { });
+                        vImg.classList.remove('paused-art');
+                        updateMediaControlsState();
+                    } catch (e) {
+                        setStatus("PRESS PLAY TO BEGIN LISTENING");
+                    }
+                } else {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    isPlaying = false;
+                    setStatus("STREAM STOPPED");
+                    bounceStatus();
+                    playIcon.className = "fa-solid fa-play";
+                    playLabel.textContent = "PLAY · 再生";
+                    actionInd.className = "action-indicator";
+                    glow.classList.remove('active');
+                    deckOpen.currentTime = 0;
+                    deckOpen.play().catch(() => { });
+                    vImg.classList.add('paused-art');
+                    updateMediaControlsState();
+                }
+            });
+
+            audio.addEventListener('waiting', () => { if (isPlaying) { setStatus("PLEASE WAIT - BUFFERING"); bounceStatus(); } });
+            audio.addEventListener('playing', () => { if (isPlaying) { setStatus("STREAMING LIVE..."); bounceStatus(); updateMediaControlsState(); } });
+            audio.addEventListener('pause', () => { updateMediaControlsState(); });
+
+            // Timer with fade – unchanged
+            const timerCard = document.getElementById('timer-feature-card');
+            const timerIcon = document.getElementById('timer-icon');
+            const timerLabel = document.getElementById('timer-label');
+            const timerModal = document.getElementById('timer-modal');
+            let timerInterval, timeLeft = 0, origVol = 1;
+            const FADE_DURATION = 8;
+
+            function updateTimerDisplay() {
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                timerLabel.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} LEFT`;
+            }
+
+            function startTimer(sec) {
+                timeLeft = sec;
+                origVol = audio.volume;
+                timerCard.classList.add('timer-active');
+                timerIcon.className = "fa-solid fa-moon";
+                updateTimerDisplay();
+                localStorage.setItem('ren_timer_seconds', timeLeft);
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    localStorage.setItem('ren_timer_seconds', timeLeft);
+                    if (timeLeft <= FADE_DURATION && isPlaying) {
+                        audio.volume = Math.max(0, (timeLeft / FADE_DURATION) * origVol);
+                    }
+                    if (timeLeft <= 0) {
+                        if (isPlaying) playBtn.click();
+                        audio.volume = origVol;
+                        cancelTimer();
+                    }
+                }, 1000);
+            }
+
+            function cancelTimer() {
+                clearInterval(timerInterval);
+                timerCard.classList.remove('timer-active');
+                timerIcon.className = "fa-regular fa-moon";
+                timerLabel.textContent = "TIMER · 計時";
+                timeLeft = 0;
+                localStorage.removeItem('ren_timer_seconds');
+                audio.volume = origVol;
+            }
+
+            timerCard.addEventListener('click', () => {
+                if (timerCard.classList.contains('timer-active')) cancelTimer();
+                else timerModal.classList.add('active');
+            });
+            timerModal.addEventListener('click', e => { if (e.target === timerModal) timerModal.classList.remove('active'); });
+            document.querySelectorAll('#timer-modal .timer-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const m = opt.dataset.minutes;
+                    if (m === 'custom') return;
+                    startTimer(parseInt(m) * 60);
+                    timerModal.classList.remove('active');
+                });
+            });
+
+            const customTimerOption = document.querySelector('[data-minutes="custom"]');
+            const customModal = document.getElementById('custom-timer-modal');
+            const minsInp = document.getElementById('custom-mins-input');
+            const secsInp = document.getElementById('custom-secs-input');
+            customTimerOption.addEventListener('click', () => {
+                timerModal.classList.remove('active');
+                customModal.classList.add('active');
+                minsInp.value = '';
+                secsInp.value = '';
+                setTimeout(() => minsInp.focus(), 350);
+            });
+            document.getElementById('cancel-custom-btn').addEventListener('click', () => customModal.classList.remove('active'));
+            document.getElementById('start-custom-btn').addEventListener('click', () => {
+                const mins = parseInt(minsInp.value) || 0, secs = parseInt(secsInp.value) || 0;
+                const total = mins * 60 + secs;
+                if (total <= 0) return;
+                customModal.classList.remove('active');
+                startTimer(total);
+            });
+            customModal.addEventListener('click', e => { if (e.target === customModal) customModal.classList.remove('active'); });
+
+            if (localStorage.getItem('ren_timer_seconds')) {
+                const savedSec = parseInt(localStorage.getItem('ren_timer_seconds'));
+                if (savedSec > 0) startTimer(savedSec);
+            }
+
+            // Ambient sounds – unchanged
+            const sources = window.ambientSources || {};
+            const ambientMap = {};
+            Object.keys(sources).forEach(k => { ambientMap[k] = new Audio(sources[k]); ambientMap[k].loop = true; });
+            const metaMap = {
+                rain: { name: 'RAIN · 雨', icon: 'fa-solid fa-droplet' },
+                vinyl: { name: 'VINYL · 録音', icon: 'fa-solid fa-compact-disc' },
+                fire: { name: 'FIRE · 計時', icon: 'fa-solid fa-fire' },
+                ocean: { name: 'OCEAN · 海', icon: 'fa-solid fa-water' },
+                woods: { name: 'WOODS · 森林', icon: 'fa-solid fa-leaf' },
+                river: { name: 'RIVER · 流', icon: 'fa-solid fa-fish' },
+                storm: { name: 'STORM · 嵐', icon: 'fa-solid fa-cloud-bolt' }
+            };
+            const activeExtra = {};
+            const activeAmbients = {
+                'rain-feature-card': { soundKey: 'rain', isPlaying: false },
+                'vinyl-feature-card': { soundKey: 'vinyl', isPlaying: false }
+            };
+            const savedAmb = localStorage.getItem('ren_active_ambients');
+            if (savedAmb) {
+                try {
+                    const p = JSON.parse(savedAmb);
+                    ['rain-feature-card', 'vinyl-feature-card'].forEach(id => {
+                        if (p[id] && metaMap[p[id]]) {
+                            activeAmbients[id].soundKey = p[id];
+                            const el = document.getElementById(id);
+                            el.querySelector('i').className = metaMap[p[id]].icon;
+                            el.querySelector('span').textContent = metaMap[p[id]].name;
+                        }
+                    });
+                } catch (e) { }
+            }
+
+            const soundModal = document.getElementById('sound-modal');
+            const soundOpts = document.querySelectorAll('#sound-modal .sound-option-card');
+            let targetCard = null;
+            const ambCards = [document.getElementById('rain-feature-card'), document.getElementById('vinyl-feature-card')];
+            ambCards.forEach(card => {
+                let pressT;
+                card.addEventListener('pointerdown', () => {
+                    pressT = setTimeout(() => {
+                        targetCard = card;
+                        soundModal.classList.add('active');
+                        const cur = activeAmbients[card.id].soundKey;
+                        soundOpts.forEach(o => o.classList.toggle('active', o.dataset.sound === cur));
+                    }, 500);
+                });
+                card.addEventListener('pointerup', () => { if (pressT) { clearTimeout(pressT); pressT = null; } });
+                card.addEventListener('pointercancel', () => { if (pressT) clearTimeout(pressT); });
+                card.addEventListener('click', () => {
+                    const st = activeAmbients[card.id];
+                    const snd = ambientMap[st.soundKey];
+                    if (!st.isPlaying) { snd.play().catch(() => { }); st.isPlaying = true; card.classList.add('active-sound'); }
+                    else { snd.pause(); st.isPlaying = false; card.classList.remove('active-sound'); }
+                });
+            });
+            soundModal.addEventListener('click', e => { if (e.target === soundModal) soundModal.classList.remove('active'); });
+            soundOpts.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    if (!targetCard) return;
+                    const id = targetCard.id, nk = opt.dataset.sound;
+                    if (activeAmbients[id].isPlaying) {
+                        ambientMap[activeAmbients[id].soundKey].pause();
+                        activeAmbients[id].isPlaying = false;
+                        targetCard.classList.remove('active-sound');
+                    }
+                    activeAmbients[id].soundKey = nk;
+                    targetCard.querySelector('i').className = metaMap[nk].icon;
+                    targetCard.querySelector('span').textContent = metaMap[nk].name;
+                    localStorage.setItem('ren_active_ambients', JSON.stringify({
+                        'rain-feature-card': activeAmbients['rain-feature-card'].soundKey,
+                        'vinyl-feature-card': activeAmbients['vinyl-feature-card'].soundKey
+                    }));
+                    soundModal.classList.remove('active');
+                    if (document.getElementById('enable-all-effects-toggle').checked) renderExtra();
+                });
+            });
+
+            // Stations – unchanged
+            const stations = window.trackPlaylist || [];
+            let stationIndex = 0;
+            const mainCard = document.getElementById('main-station-card');
+            const scanCard = document.getElementById('scan-station-card');
+            const stationListModal = document.getElementById('station-list-modal');
+            const stationContainer = document.getElementById('station-list-container');
+            stations.forEach((st, i) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg-tertiary); border-radius:var(--radius-xs); height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; cursor:pointer; border:1px solid var(--border-subtle);';
+                div.innerHTML = `<span style="font-size:0.62rem; color:var(--text-muted);">STATION ${String(i + 1).padStart(2, '0')}</span><span style="font-size:0.62rem; font-weight:bold;">${st.name}</span>`;
+                div.addEventListener('click', () => { selectStation(i); stationListModal.classList.remove('active'); });
+                stationContainer.appendChild(div);
+            });
+
+            function selectStation(i) {
+                stationIndex = i;
+                localStorage.setItem('ren_station_index', i);
+                audio.src = stations[i].url;
+                audio.load();
+                mainCard.classList.toggle('active', i === 0);
+                scanCard.classList.toggle('active', i !== 0);
+                if (isPlaying) {
+                    setStatus("PLEASE WAIT - BUFFERING"); bounceStatus();
+                    audio.play().then(() => { setStatus(`STREAMING : ${stations[i].name}`); bounceStatus(); updateMediaControlsState(); }).catch(() => setStatus("STREAM ERROR"));
+                } else setStatus("PRESS PLAY TO BEGIN LISTENING");
+                updateMediaControlsState();
+            }
+            mainCard.addEventListener('click', () => selectStation(0));
+            scanCard.addEventListener('click', () => stationListModal.classList.add('active'));
+            stationListModal.addEventListener('click', e => { if (e.target === stationListModal) stationListModal.classList.remove('active'); });
+            if (localStorage.getItem('ren_station_index')) selectStation(parseInt(localStorage.getItem('ren_station_index')));
+
+            // Sparkle & guide – unchanged
+            document.getElementById('sparkle-menu-btn').addEventListener('click', () => document.getElementById('sparkle-modal').classList.add('active'));
+            document.getElementById('sparkle-modal').addEventListener('click', e => { if (e.target === document.getElementById('sparkle-modal')) document.getElementById('sparkle-modal').classList.remove('active'); });
+            document.getElementById('tips-btn').addEventListener('click', () => {
+                document.getElementById('sparkle-modal').classList.remove('active');
+                document.getElementById('user-guide-modal').classList.add('active');
+            });
+            document.getElementById('guide-back-btn').addEventListener('click', () => document.getElementById('user-guide-modal').classList.remove('active'));
+
+            // Zen – unchanged
+            const zenOverlay = document.getElementById('zen-mode-overlay');
+            document.getElementById('zen-mode-btn').addEventListener('click', () => {
+                document.getElementById('sparkle-modal').classList.remove('active');
+                zenOverlay.classList.add('active');
+                if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { });
+            });
+            document.getElementById('zen-exit-btn').addEventListener('click', () => {
+                zenOverlay.classList.remove('active');
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
+            });
+            const zenPlayBtn = document.getElementById('zen-play-btn');
+            const zenPlayIcon = document.getElementById('zen-play-icon');
+            zenPlayBtn.addEventListener('click', () => playBtn.click());
+            const syncZen = () => { zenPlayIcon.className = audio.paused ? "fa-solid fa-play" : "fa-solid fa-stop"; };
+            audio.addEventListener('play', syncZen); audio.addEventListener('pause', syncZen); syncZen();
+
+            const zenClock = document.getElementById('zen-clock-display');
+            setInterval(() => { const d = new Date(); zenClock.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }, 1000);
+
+            // Pomodoro – unchanged
+            const pomoToggle = document.getElementById('pomodoro-toggle');
+            const pomoDisplay = document.getElementById('zen-pomodoro-display');
+            let pomoInterval, pomoLeft = 25 * 60, pomoRunning = false, pomoPaused = false;
+            if (localStorage.getItem('ren_pomo_active') === 'true') { pomoToggle.checked = true; pomoDisplay.style.display = 'block'; startPomodoro(); }
+            pomoToggle.addEventListener('change', () => {
+                if (pomoToggle.checked) { pomoDisplay.style.display = 'block'; localStorage.setItem('ren_pomo_active', 'true'); startPomodoro(); }
+                else { pomoDisplay.style.display = 'none'; localStorage.setItem('ren_pomo_active', 'false'); stopPomodoro(); }
+            });
+            function startPomodoro() { if (pomoInterval) clearInterval(pomoInterval); pomoRunning = true; pomoPaused = false; updatePomo(); pomoInterval = setInterval(() => { if (!pomoPaused && pomoLeft > 0) { pomoLeft--; updatePomo(); localStorage.setItem('ren_pomo_seconds', pomoLeft); if (pomoLeft <= 0) resetPomodoro(); } }, 1000); }
+            function stopPomodoro() { clearInterval(pomoInterval); pomoRunning = false; pomoLeft = 25 * 60; }
+            function resetPomodoro() { pomoLeft = 25 * 60; pomoPaused = true; updatePomo(); }
+            function updatePomo() { const m = Math.floor(pomoLeft / 60), s = pomoLeft % 60; pomoDisplay.textContent = `${pomoPaused ? "PAUSED 停止" : "WORK 作業"} - ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+            pomoDisplay.addEventListener('pointerdown', e => { let t = setTimeout(() => resetPomodoro(), 600); pomoDisplay.addEventListener('pointerup', () => { clearTimeout(t); if (pomoRunning) { pomoPaused = !pomoPaused; updatePomo(); } }, { once: true }); });
+
+            // Settings – mostly unchanged, but we'll adjust the auto-artwork and data saving listeners
+            const settingsModal = document.getElementById('settings-modal');
+            document.getElementById('settings-gear-btn').addEventListener('click', () => settingsModal.classList.add('active'));
+            settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
+            const tabSettings = document.getElementById('settings-tab-btn'), tabInfo = document.getElementById('info-tab-btn');
+            tabSettings.addEventListener('click', () => { tabSettings.classList.add('active'); tabInfo.classList.remove('active'); document.getElementById('settings-tab-content').style.display = 'flex'; document.getElementById('info-tab-content').style.display = 'none'; });
+            tabInfo.addEventListener('click', () => { tabInfo.classList.add('active'); tabSettings.classList.remove('active'); document.getElementById('info-tab-content').style.display = 'block'; document.getElementById('settings-tab-content').style.display = 'none'; });
+
+            const darkToggle = document.getElementById('dark-mode-toggle');
+            if (localStorage.getItem('ren_dark_mode') === 'false') { darkToggle.checked = false; document.body.classList.add('light-mode'); }
+            darkToggle.addEventListener('change', () => { const d = darkToggle.checked; localStorage.setItem('ren_dark_mode', d); document.body.classList.toggle('light-mode', !d); });
+
+            const disableArtToggle = document.getElementById('disable-artworks-toggle');
+            if (localStorage.getItem('ren_disable_art') === 'true') { disableArtToggle.checked = true; vCont.style.display = 'none'; }
+            disableArtToggle.addEventListener('change', () => { const dis = disableArtToggle.checked; localStorage.setItem('ren_disable_art', dis); vCont.style.display = dis ? 'none' : 'block'; });
+
+            const autoArtToggle = document.getElementById('auto-artwork-toggle');
+            if (localStorage.getItem('ren_auto_artwork') === 'false') autoArtToggle.checked = false;
+            let autoInterval;
+            function startAuto() {
+                if (autoInterval) clearInterval(autoInterval);
+                const dataSaving = document.getElementById('data-saving-toggle').checked;
+                // In data saving mode, we don't auto-shuffle even if auto-artwork is on (to save data and avoid any online fetch)
+                if (!autoArtToggle.checked || dataSaving) return;
+                autoInterval = setInterval(() => {
+                    if (isPlaying) shuffleArtwork();  // shuffleArtwork already filters based on data saving
+                }, 120000);
+            }
+            autoArtToggle.addEventListener('change', () => {
+                localStorage.setItem('ren_auto_artwork', autoArtToggle.checked);
+                startAuto();
+            });
+            // Start auto if appropriate
+            startAuto();
+
+            const dataSaveToggle = document.getElementById('data-saving-toggle');
+            if (localStorage.getItem('ren_data_saving') === 'true') {
+                dataSaveToggle.checked = true;
+                document.getElementById('bg-particles').style.display = 'none';
+                clearInterval(autoInterval); // auto will be stopped; we'll call startAuto to reflect new state
+                enforceDataSavingArtwork(); // switch to offline artwork immediately
+            }
+            dataSaveToggle.addEventListener('change', () => {
+                const on = dataSaveToggle.checked;
+                localStorage.setItem('ren_data_saving', on);
+                document.getElementById('bg-particles').style.display = on ? 'none' : 'block';
+                if (on) {
+                    clearInterval(autoInterval);
+                    enforceDataSavingArtwork(); // ensure current artwork is offline
+                } else {
+                    // Restore auto if auto toggle is enabled
+                    if (autoArtToggle.checked) startAuto();
+                }
+            });
+
+            const musicVol = document.getElementById('music-volume-slider');
+            if (localStorage.getItem('ren_music_vol')) { musicVol.value = localStorage.getItem('ren_music_vol'); audio.volume = musicVol.value / 100; }
+            musicVol.addEventListener('input', () => { const v = musicVol.value; audio.volume = v / 100; localStorage.setItem('ren_music_vol', v); });
+
+            const sfxVol = document.getElementById('sfx-volume-slider');
+            if (localStorage.getItem('ren_sfx_vol')) sfxVol.value = localStorage.getItem('ren_sfx_vol');
+            sfxVol.addEventListener('input', () => { const v = sfxVol.value; localStorage.setItem('ren_sfx_vol', v); Object.values(ambientMap).forEach(s => s.volume = v / 100); });
+            Object.values(ambientMap).forEach(s => s.volume = (sfxVol.value || 50) / 100);
+
+            // Accent color – unchanged
+            const savedAccent = localStorage.getItem('ren_accent') || '#c4a67a';
+            applyAccent(savedAccent);
+            document.querySelectorAll('.accent-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === savedAccent));
+            function applyAccent(hex) { document.documentElement.style.setProperty('--accent', hex); const rgb = hexToRgb(hex); document.documentElement.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.12)`); document.documentElement.style.setProperty('--accent-glow', `rgba(${rgb.r},${rgb.g},${rgb.b},0.25)`); }
+            function hexToRgb(hex) { const c = hex.substring(1); const bigint = parseInt(c, 16); return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 }; }
+            document.getElementById('accent-swatches').addEventListener('click', e => {
+                const sw = e.target.closest('.accent-swatch'); if (sw) { const color = sw.dataset.color; applyAccent(color); localStorage.setItem('ren_accent', color); document.querySelectorAll('.accent-swatch').forEach(s => s.classList.remove('active')); sw.classList.add('active'); }
+                if (e.target.id === 'custom-accent-btn') document.getElementById('custom-accent-input').click();
+            });
+            document.getElementById('custom-accent-input').addEventListener('input', e => { const color = e.target.value; applyAccent(color); localStorage.setItem('ren_accent', color); document.querySelectorAll('.accent-swatch').forEach(s => s.classList.remove('active')); });
+
+            document.getElementById('more-info-sub-btn').addEventListener('click', () => tabInfo.click());
+            document.getElementById('legal-notices-btn').addEventListener('click', () => document.getElementById('legal-notices-modal').classList.add('active'));
+            document.getElementById('legal-back-btn').addEventListener('click', () => document.getElementById('legal-notices-modal').classList.remove('active'));
+            document.getElementById('info-user-guide-btn').addEventListener('click', () => { settingsModal.classList.remove('active'); document.getElementById('user-guide-modal').classList.add('active'); });
+
+            // Extra sounds – unchanged
+            const enableAll = document.getElementById('enable-all-effects-toggle');
+            const extraBar = document.getElementById('extra-sounds-bar');
+            if (localStorage.getItem('ren_enable_all_effects') === 'true') { enableAll.checked = true; extraBar.classList.add('active'); renderExtra(); }
+            enableAll.addEventListener('change', () => { localStorage.setItem('ren_enable_all_effects', enableAll.checked); if (enableAll.checked) { extraBar.classList.add('active'); renderExtra(); } else { extraBar.classList.remove('active'); cleanupExtra(); } });
+            function renderExtra() { extraBar.innerHTML = ''; const used = Object.values(activeAmbients).map(s => s.soundKey); Object.keys(metaMap).filter(k => !used.includes(k)).forEach(k => { const tile = document.createElement('div'); tile.className = 'extra-sound-tile'; tile.dataset.sound = k; tile.innerHTML = `<i class="${metaMap[k].icon}"></i>`; if (activeExtra[k] && activeExtra[k].isPlaying) tile.classList.add('active-sound'); tile.addEventListener('click', () => { if (!activeExtra[k]) activeExtra[k] = { isPlaying: false }; const s = activeExtra[k], a = ambientMap[k]; if (!s.isPlaying) { a.play().catch(() => { }); s.isPlaying = true; tile.classList.add('active-sound'); } else { a.pause(); a.currentTime = 0; s.isPlaying = false; tile.classList.remove('active-sound'); } }); extraBar.appendChild(tile); }); }
+            function cleanupExtra() { Object.keys(activeExtra).forEach(k => { if (activeExtra[k].isPlaying) { ambientMap[k].pause(); ambientMap[k].currentTime = 0; activeExtra[k].isPlaying = false; } }); extraBar.innerHTML = ''; }
+
+            // Swipe to dismiss – unchanged
+            document.querySelectorAll('.modal-content').forEach(c => {
+                let sy, cy, dragging;
+                c.addEventListener('pointerdown', e => { if (e.target.closest('.modal-drag-handle') || c.scrollTop <= 0) { sy = e.clientY; dragging = true; c.style.transition = 'none'; } });
+                window.addEventListener('pointermove', e => { if (!dragging) return; cy = e.clientY; const d = cy - sy; if (d > 0) c.style.transform = `translateY(${d}px)`; });
+                window.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; c.style.transition = 'transform 0.45s var(--spring-ease)'; const d = cy - sy; const overlay = c.closest('.modal-overlay'); if (d > 80 && overlay) { overlay.classList.remove('active'); c.style.transform = 'translateY(100%)'; } else c.style.transform = 'translateY(0)'; });
+            });
+
+            // Manual artwork shuffle on tap
+            vCont.addEventListener('click', () => shuffleArtwork());
+
+            // Initial artwork load
+            shuffleArtwork();
+            setStatus("PRESS PLAY TO BEGIN LISTENING");
+            document.getElementById('greeting-text').textContent = new Date().getHours() < 12 ? "Good Morning" : new Date().getHours() < 18 ? "Good Afternoon" : "Good Evening";
+        })();
+    </script>
+</body>
+
+</html>

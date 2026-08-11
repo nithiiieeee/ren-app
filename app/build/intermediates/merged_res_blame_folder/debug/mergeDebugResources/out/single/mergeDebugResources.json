@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.nithieeee.ren.app-debug-34:/drawable_ic_stat_name.png.flat",
+        "source": "com.nithieeee.ren.app-main-36:/drawable/ic_stat_name.png"
+    },
+    {
+        "merged": "com.nithieeee.ren.app-debug-34:/drawable_ic_launcher_foreground.png.flat",
+        "source": "com.nithieeee.ren.app-main-36:/drawable/ic_launcher_foreground.png"
+    }
+]
